@@ -10,6 +10,8 @@ import Foundation
 
 class MapAndListViewModel {
     
+    var detailedTruck: Truck?
+    
     var openTrucks: [Truck] = []
     
     var trucks: [Truck]? {

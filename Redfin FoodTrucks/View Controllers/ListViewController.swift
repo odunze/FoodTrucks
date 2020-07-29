@@ -51,6 +51,16 @@ class ListViewController: UITableViewController {
         return cell
     }
     
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if let nav = navigationController {
+            let selectedTruck = viewmodel.openTrucks[indexPath.row]
+            viewmodel.detailedTruck = selectedTruck
+            let mapVC = MapViewController()
+            mapVC.viewmodel = viewmodel
+            nav.present(mapVC, animated: true)
+        }
+    }
+    
     @objc func showMap() {
         if let nav = navigationController {
             let mapVC = MapViewController()

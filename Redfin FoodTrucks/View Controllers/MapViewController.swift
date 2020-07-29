@@ -23,25 +23,49 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     }()
     
     override func viewDidLoad() {
-           super.viewDidLoad()
-           detailView.addressLabel.text = "No truck selected."
-       }
-       
-       override func viewWillAppear(_ animated: Bool) {
-           super.viewWillAppear(animated)
-           
-           if let vm = viewmodel {
-               
-               for truck in vm.openTrucks {
-                   if let coord = truck.coordinates {
-                       let annotation = MKPointAnnotation()
-                       annotation.coordinate = coord
-                       map.addAnnotation(annotation)
-                   }
-               }
-            map.showAnnotations(map.annotations, animated: true)
-           }
-       }
+        super.viewDidLoad()
+        detailView.addressLabel.text = "No truck selected."
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        if let vm = viewmodel {
+            
+            if vm.detailedTruck == nil {
+                for truck in vm.openTrucks {
+                    if let coord = truck.coordinates {
+                        let annotation = MKPointAnnotation()
+                        annotation.coordinate = coord
+                        map.addAnnotation(annotation)
+                    }
+                }
+                map.showAnnotations(map.annotations, animated: true)
+            } else if let detailedTruck = vm.detailedTruck {
+                showTruckDetail(truck: detailedTruck)
+                map.showAnnotations(map.annotations, animated: true)
+            }
+        }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        if let vm = viewmodel {
+            vm.detailedTruck = nil
+        }
+    }
+    
+    func showTruckDetail(truck: Truck) {
+        
+        if let coordinates = truck.coordinates {
+            let annotation = MKPointAnnotation()
+            annotation.coordinate = coordinates
+            map.addAnnotation(annotation)
+        }
+        
+        updateSelectedTruck(name: truck.applicant, address: truck.location, menu: truck.optionaltext, opening: truck.starttime, closing: truck.endtime)
+    }
     
     init() {
         super.init(nibName: nil, bundle: nil)
@@ -95,6 +119,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             updateSelectedTruck(name: selectedTruck.applicant, address: selectedTruck.location, menu: selectedTruck.optionaltext, opening: selectedTruck.starttime, closing: selectedTruck.endtime)
         }
     }
+    
     
     private func setConstraints() {
         NSLayoutConstraint.activate([
